@@ -175,3 +175,19 @@ def transform_matrix_element(matrix: mathutils.Matrix, transform_type: str, rota
 
     return 0.0
 
+def transform_target_distance(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone],
+                              target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone],
+                              transform_space_1: typing.Optional[str]='WORLD_SPACE',
+                              transform_space_2: typing.Optional[str]='WORLD_SPACE') -> float:
+    m1 = transform_matrix(target_1, transform_space_1)
+    m2 = transform_matrix(target_2, transform_space_2)
+    return (m1.to_translation() - m2.to_translation()).length
+    
+
+# https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/blenkernel/intern/fcurve_driver.c
+def transform_target_rotational_difference(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone],
+                                           target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone]) -> float:
+    q1 = transform_matrix(target_1).to_quaternion()
+    q2 = transform_matrix(target_2).to_quaternion()
+    angle = math.fabs(2.0 * math.acos((q1.inverted() * q2)[0]))
+    return 2.0 * math.pi - angle if angle > math.pi else angle
