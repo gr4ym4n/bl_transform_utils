@@ -175,6 +175,28 @@ def transform_matrix_element(matrix: mathutils.Matrix, transform_type: str, rota
 
     return 0.0
 
+def transform_matrix_flatten(matrix: mathutils.Matrix) -> typing.Tuple[float, float, float, float,
+                                                                       float, float, float, float,
+                                                                       float, float, float, float,
+                                                                       float, float, float, float]:
+    return sum((matrix.col[i].to_tuple() for i in range(4)), tuple())
+
+def transform_matrix_compose(location: typing.Optional[typing.Tuple[float, float, float]]=(0., 0., 0.),
+                             rotation: typing.Optional[typing.Tuple[float, float, float, float]]=(1., 0., 0., 0.),
+                             scale: typing.Optional[typing.Tuple[float, float, float]]=(1., 1., 1.)) -> None:
+
+    matrix = mathutils.Matrix.Identity(3)
+    matrix[0][0] = scale[0]
+    matrix[1][1] = scale[1]
+    matrix[2][2] = scale[2]
+
+    matrix = (rotation.to_matrix() @ matrix).to_4x4()
+    matrix[0][3] = location[0]
+    matrix[1][3] = location[1]
+    matrix[2][3] = location[2]
+
+    return matrix
+
 def transform_target_distance(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone],
                               target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone],
                               transform_space_1: typing.Optional[str]='WORLD_SPACE',
