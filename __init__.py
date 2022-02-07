@@ -65,7 +65,7 @@ def transform_matrix(target: typing.Optional[typing.Union[bpy.types.ID, bpy.type
 
     if DEBUG:
         if STRICT:
-            assert (target is not None
+            assert (target is None
                     or isinstance(target, (bpy.types.Object, bpy.types.PoseBone)))
 
         if not isinstance(transform_space, str):
@@ -115,7 +115,7 @@ def transform_matrix_element(matrix: mathutils.Matrix, transform_type: str, rota
             assert isinstance(rotation_mode, str)
             assert isinstance(driver, bool)
 
-        if len(matrix != 4):
+        if len(matrix) != 4:
             message = (f'transform_matrix_element(matrix, transform_type, rotation_mode="AUTO", driver=False): '
                        f'Expected matrix to be 4x4, not {len(matrix)}x{len(matrix)}.')
 
@@ -197,8 +197,8 @@ def transform_matrix_compose(location: typing.Optional[typing.Tuple[float, float
 
     return matrix
 
-def transform_target_distance(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone],
-                              target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone],
+def transform_target_distance(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone, None],
+                              target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone, None],
                               transform_space_1: typing.Optional[str]='WORLD_SPACE',
                               transform_space_2: typing.Optional[str]='WORLD_SPACE') -> float:
     m1 = transform_matrix(target_1, transform_space_1)
@@ -207,8 +207,8 @@ def transform_target_distance(target_1: typing.Union[bpy.types.ID, bpy.types.Pos
     
 
 # https://github.com/blender/blender/blob/594f47ecd2d5367ca936cf6fc6ec8168c2b360d0/source/blender/blenkernel/intern/fcurve_driver.c
-def transform_target_rotational_difference(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone],
-                                           target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone]) -> float:
+def transform_target_rotational_difference(target_1: typing.Union[bpy.types.ID, bpy.types.PoseBone, None],
+                                           target_2: typing.Union[bpy.types.ID, bpy.types.PoseBone, None]) -> float:
     q1 = transform_matrix(target_1).to_quaternion()
     q2 = transform_matrix(target_2).to_quaternion()
     angle = math.fabs(2.0 * math.acos((q1.inverted() * q2)[0]))
